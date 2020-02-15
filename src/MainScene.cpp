@@ -1,7 +1,7 @@
 #include "MainScene.h"
 
 MainScene::MainScene(bool yn)
-	:Scene(yn)
+	:Scene(yn),_in(true,std::nullopt)
 {
 }
 
@@ -30,7 +30,7 @@ bool MainScene::init()
 		_lights[i]._isActive = true;
 		_pbr->setUniform("lights[" + std::to_string(i) + "].position", _lights[i]._pos);
 		_pbr->setUniform("lights[" + std::to_string(i) + "].colour", _lights[i]._col);
-		_pbr->setUniform("lights[" + std::to_string(i) + "].active", _lights[i]._isActive);
+		_pbr->setUniform("lights[" + std::to_string(i) + "].active", (int)_lights[i]._isActive);
 
 	}
 	_pbr->loadProjectionMatrix(1600.0f, 1000.0f);
@@ -48,10 +48,46 @@ bool MainScene::exit()
 
 void MainScene::childUpdate(float dt)
 {
+	//calculate camera movement
+	auto moveForce = glm::vec3(0.0f, 0.0f, 0.0f);
+	if (_in.keyboard->keyPressed(Cappuccino::KeyEvent::W))
+		moveForce += glm::vec3(c.getFront().x, 0.0f, c.getFront().z);
+	if (_in.keyboard->keyPressed(Cappuccino::KeyEvent::S))
+		moveForce -= glm::vec3(c.getFront().x, 0.0f, c.getFront().z);
+
+	if (_in.keyboard->keyPressed(Cappuccino::KeyEvent::A))
+		moveForce -= glm::vec3(c.getRight().x, 0.0f, c.getRight().z);
+	if (_in.keyboard->keyPressed(Cappuccino::KeyEvent::D))
+		moveForce += glm::vec3(c.getRight().x, 0.0f, c.getRight().z);
+
+	float speed = 1.5f;
+	moveForce *= speed;
+
+	c.setPosition(c.getPosition() + moveForce * dt);
+
+	_pbr->use();
+	_pbr->loadViewMatrix(c);
 }
 
 void MainScene::mouseFunction(double xpos, double ypos)
 {
+	static bool firstMouse = true;
+	static float lastX = 400, lastY = 500;
+	static float yaw = -90.0f;
+	static float pitch = 0.0f;
+	if (firstMouse)
+	{
+		lastX = static_cast<float>(xpos);
+		lastY = static_cast<float>(ypos);
+		firstMouse = false;
+	}
+
+	float xOffset = xpos - lastX;
+	float yOffset = lastY - ypos;
+	lastX = static_cast<float>(xpos);
+	lastY = static_cast<float>(ypos);
+
+	c.doMouseMovement(xOffset, yOffset);
 }
 
 Empty::Empty(Cappuccino::Shader& SHADER, const std::vector<Cappuccino::Texture*>& textures, const std::vector<Cappuccino::Mesh*>& meshes)

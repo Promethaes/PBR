@@ -2,6 +2,7 @@
 #include "Cappuccino/SceneManager.h"
 #include "Cappuccino/ShaderProgram.h"
 #include "Cappuccino/GameObject.h"
+#include "Cappuccino/CappInput.h"
 
 class PointLight {
 public:
@@ -30,6 +31,7 @@ public:
 
 	void mouseFunction(double xpos, double ypos) override;
 private:
+	Cappuccino::CappInput _in;
 	Cappuccino::Camera c;
 	std::vector<PointLight> _lights;
 	Cappuccino::Shader* _pbr;

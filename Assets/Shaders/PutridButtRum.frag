@@ -22,7 +22,7 @@ struct PointLight {
 const float PI = 3.14159265359f;
 #define MAX_LIGHTS 40
 uniform int numLights;
-uniform PointLight[MAX_LIGHTS] lights;
+uniform PointLight lights[MAX_LIGHTS];
 uniform Material material;
 
 in vec3 FragPos;
@@ -115,4 +115,5 @@ void main(){
     color += texture(material.emission,TexCoords).rgb;
 
     color = vec3(1.0f) - exp(-color*1.0f);
+    FragColor = vec4(color,1.0f);
 }
