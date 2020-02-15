@@ -29,7 +29,6 @@ in vec3 FragPos;
 in vec3 TestViewDir;
 in vec2 TexCoords;
 in mat3 TBN;
-in vec3 camPos;
 
 vec3 fresnelSchlick(float cosTheta,vec3 F0){
     return F0 + (1.0f - F0) * pow(1.0f - cosTheta,5.0f);
@@ -59,9 +58,9 @@ float GeometrySchlickGGX(float NdotV, float roughness)
 	
     return num / denom;
 }
-float GeometrySmith(vec3 N, vec3 TestViewDir, vec3 L, float roughness)
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 {
-    float NdotV = max(dot(N, TestViewDir), 0.0);
+    float NdotV = max(dot(N, V), 0.0);
     float NdotL = max(dot(N, L), 0.0);
     float ggx2  = GeometrySchlickGGX(NdotV, roughness);
     float ggx1  = GeometrySchlickGGX(NdotL, roughness);

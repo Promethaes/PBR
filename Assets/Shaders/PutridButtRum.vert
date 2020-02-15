@@ -14,7 +14,6 @@ out vec3 FragPos;
 out vec3 TestViewDir;
 out vec2 TexCoords;
 out mat3 TBN;
-out vec3 camPos;
 void main()
 {
     vec3 pos = aPos;
@@ -34,8 +33,5 @@ void main()
 
     vec3 B = normalize(cross(T,N));
     TBN = mat3(T,B,N);
-    camPos.x = view[0][3];
-    camPos.y = view[1][3];
-    camPos.z = view[2][3];
 
 } 
