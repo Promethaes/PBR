@@ -10,11 +10,13 @@ bool MainScene::init()
 	_lights.push_back({ glm::vec3(1.0f, 1.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f) });
 
 	_pbr = new Cappuccino::Shader(std::string("PBR"), "PutridButtRum.vert", "PutridButtRum.frag");
-	_test = new Empty(*_pbr, { new Cappuccino::Texture("aAlb","autoRifle/autoRifle-Diffuse.png",Cappuccino::TextureType::PBRAlbedo),
-		new Cappuccino::Texture("aEmis","autoRifle/autoRifle-Emission.png",Cappuccino::TextureType::EmissionMap),
-		new Cappuccino::Texture("aNorm","autoRifle/autoRifle-Normal.png",Cappuccino::TextureType::NormalMap),
-		new Cappuccino::Texture("aMetal","autoRifle/autoRifle-Metallic.png",Cappuccino::TextureType::PBRMetallic),
-		new Cappuccino::Texture("aRough","autoRifle/autoRifle-Roughness.png",Cappuccino::TextureType::PBRRoughness) }, { new Cappuccino::Mesh("autoRifle","autoRifle.obj") });
+	_test = new Empty(*_pbr, { new Cappuccino::Texture("aAlb","marksmanRifle/marksmanRifle-Diffuse.png",Cappuccino::TextureType::PBRAlbedo),
+		new Cappuccino::Texture("aEmis","marksmanRifle/marksmanRifle-Emission.png",Cappuccino::TextureType::EmissionMap),
+		new Cappuccino::Texture("aNorm","marksmanRifle/marksmanRifle-Normal.png",Cappuccino::TextureType::NormalMap),
+		new Cappuccino::Texture("aMetal","marksmanRifle/marksmanRifle-Metallic.png",Cappuccino::TextureType::PBRMetallic),
+		new Cappuccino::Texture("aRough","marksmanRifle/work.png",Cappuccino::TextureType::PBRRoughness),
+		new Cappuccino::Texture("aRoughe","marksmanRifle/marksmanRifle-AO.png",Cappuccino::TextureType::PBRAmbientOcc)
+		}, { new Cappuccino::Mesh("marksmanRifle","marksmanRifle.obj") });
 	_test->setActive(true);
 
 	_pbr->use();
@@ -36,6 +38,7 @@ bool MainScene::init()
 	_pbr->loadProjectionMatrix(1600.0f, 1000.0f);
 	_pbr->loadViewMatrix(c);
 	
+	glfwSetInputMode(glfwGetCurrentContext(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 
 	return true;
@@ -59,6 +62,11 @@ void MainScene::childUpdate(float dt)
 		moveForce -= glm::vec3(c.getRight().x, 0.0f, c.getRight().z);
 	if (_in.keyboard->keyPressed(Cappuccino::KeyEvent::D))
 		moveForce += glm::vec3(c.getRight().x, 0.0f, c.getRight().z);
+
+	if (_in.keyboard->keyPressed(Cappuccino::KeyEvent::LEFT_CONTROL))
+		moveForce -= glm::vec3(0.0f,1.0f,0.0f);
+	if (_in.keyboard->keyPressed(Cappuccino::KeyEvent::SPACE))
+		moveForce += glm::vec3(0.0f,1.0f,0.0f);
 
 	float speed = 1.5f;
 	moveForce *= speed;

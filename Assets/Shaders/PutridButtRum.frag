@@ -79,6 +79,9 @@ void main(){
     float metallic = texture(material.metallic,TexCoords).r;
     float roughness = texture(material.roughness,TexCoords).r;
     float ambientOcc = texture(material.ambientOcc,TexCoords).r;
+    
+    vec3 F0 = vec3(0.04f);
+    F0 = mix(F0,albedo,metallic);
 
     vec3 Lo = vec3(0.0f);
     for(int i = 0; i < numLights;i++){
@@ -89,28 +92,25 @@ void main(){
         float attenuation = 1.0f/(distance*distance);
         vec3 radiance = lights[i].colour * attenuation;
         
-        vec3 F0 = vec3(0.04f);
-        F0 = mix(F0,albedo,metallic);
         vec3 F = fresnelSchlick(max(dot(H,TestViewDir),0.0),F0);
         
         float NDF = DistributionGGX(norm, H, roughness);       
         float G   = GeometrySmith(norm, TestViewDir, L, roughness);
 
         vec3 numerator = NDF*G*F;
-        float denominator = 4.0f*max(dot(norm,TestViewDir),0.0)*max(dot(norm,L),0.0f);
-        vec3 specular = numerator/max(denominator,0.001f);
+        float denominator = 4.0f*max(dot(norm,TestViewDir),0.0)*max(dot(norm,L),0.0f) + 0.001;
+        vec3 specular = numerator/denominator;
 
         vec3 kS = F;
         vec3 kD = vec3(1.0f) - kS;
 
         kD *= 1.0f - metallic;
-        
 
         float NdotL = max(dot(norm,L),0.0f);
         Lo += (kD*albedo/PI + specular) * radiance * NdotL;
     }
 
-    vec3 ambient = vec3(0.03) * albedo * ambientOcc;
+    vec3 ambient = albedo * ambientOcc;
     vec3 color   = ambient + Lo;
     color += texture(material.emission,TexCoords).rgb;
 
