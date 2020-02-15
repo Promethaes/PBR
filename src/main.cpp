@@ -12,7 +12,7 @@ using Texture     = Cappuccino::Texture;
 #pragma region PROGRAM SETTINGS
 
 constexpr GLuint  SCR_WIDTH = 1600;
-constexpr GLuint  SCR_HEIGHT = 1200;
+constexpr GLuint  SCR_HEIGHT = 1000;
 constexpr GLchar* SCR_TITLE = "Cappuccino Engine v1.1";
 
 #pragma endregion

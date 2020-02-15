@@ -34,8 +34,8 @@ void main()
 
     vec3 B = normalize(cross(T,N));
     TBN = mat3(T,B,N);
-    camPos.x = viewMat[0][3];
-    camPos.y = viewMat[1][3];
-    camPos.z = viewMat[2][3];
+    camPos.x = view[0][3];
+    camPos.y = view[1][3];
+    camPos.z = view[2][3];
 
 } 
