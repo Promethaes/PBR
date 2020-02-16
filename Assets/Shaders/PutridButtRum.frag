@@ -91,9 +91,9 @@ void main(){
         float attenuation = 1.0f/(distance*distance);
         vec3 radiance = lights[i].colour * attenuation;
         
-        vec3 F = fresnelSchlick(max(dot(H,TestViewDir),0.0),F0);
+        vec3 F = fresnelSchlick(max(dot(-H,TestViewDir),0.0),F0);
         
-        float NDF = DistributionGGX(norm, H, roughness);       
+        float NDF = DistributionGGX(norm, H, roughness);
         float G   = GeometrySmith(norm, TestViewDir, L, roughness);
 
         vec3 numerator = NDF*G*F;
@@ -109,6 +109,7 @@ void main(){
         Lo += (kD*albedo/PI + specular) * radiance * NdotL;
     }
 
+    //0.03 should be here, but to see stuff right now we leave it out
     vec3 ambient = albedo * ambientOcc;
     vec3 color   = ambient + Lo;
     color += texture(material.emission,TexCoords).rgb;
