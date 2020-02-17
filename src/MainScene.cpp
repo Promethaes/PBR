@@ -1,13 +1,14 @@
 #include "MainScene.h"
 
 MainScene::MainScene(bool yn)
-	:Scene(yn),_in(true,std::nullopt)
+	:Scene(yn), _in(true, std::nullopt)
 {
 }
 
 bool MainScene::init()
 {
 	_lights.push_back({ glm::vec3(1.0f, 1.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f) });
+	_lights.push_back({ glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f) });
 
 	_pbr = new Cappuccino::Shader(std::string("PBR"), "PutridButtRum.vert", "PutridButtRum.frag");
 	_test = new Empty(*_pbr, { new Cappuccino::Texture("aAlb","marksmanRifle/marksmanRifle-Diffuse.png",Cappuccino::TextureType::PBRAlbedo),
@@ -27,8 +28,8 @@ bool MainScene::init()
 	_pbr->setUniform("material.ambientOcc", (int)Cappuccino::TextureType::PBRAmbientOcc);
 	_pbr->setUniform("material.emission", (int)Cappuccino::TextureType::EmissionMap);
 	_pbr->setUniform("numLights", (int)_lights.size());
-	
-	for (unsigned i = 0; i < _lights.size();i++) {
+
+	for (unsigned i = 0; i < _lights.size(); i++) {
 		_lights[i]._isActive = true;
 		_pbr->setUniform("lights[" + std::to_string(i) + "].position", _lights[i]._pos);
 		_pbr->setUniform("lights[" + std::to_string(i) + "].colour", _lights[i]._col);
@@ -37,7 +38,7 @@ bool MainScene::init()
 	}
 	_pbr->loadProjectionMatrix(1600.0f, 1000.0f);
 	_pbr->loadViewMatrix(c);
-	
+
 	glfwSetInputMode(glfwGetCurrentContext(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 
@@ -64,9 +65,28 @@ void MainScene::childUpdate(float dt)
 		moveForce += glm::vec3(c.getRight().x, 0.0f, c.getRight().z);
 
 	if (_in.keyboard->keyPressed(Cappuccino::KeyEvent::LEFT_CONTROL))
-		moveForce -= glm::vec3(0.0f,1.0f,0.0f);
+		moveForce -= glm::vec3(0.0f, 1.0f, 0.0f);
 	if (_in.keyboard->keyPressed(Cappuccino::KeyEvent::SPACE))
-		moveForce += glm::vec3(0.0f,1.0f,0.0f);
+		moveForce += glm::vec3(0.0f, 1.0f, 0.0f);
+
+
+	if (_in.keyboard->keyPressed(Cappuccino::KeyEvent::LEFT_ARROW))
+		_test->_transform.rotate(glm::vec3(0.0f, 1.0f, 0.0f), 90 * dt);
+	else if (_in.keyboard->keyPressed(Cappuccino::KeyEvent::RIGHT_ARROW))
+		_test->_transform.rotate(glm::vec3(0.0f, 1.0f, 0.0f), 90 * -dt);
+	else if (_in.keyboard->keyPressed(Cappuccino::KeyEvent::RIGHT_CONTROL)) {
+
+		if (_in.keyboard->keyPressed(Cappuccino::KeyEvent::LEFT_ARROW))
+			_test->_transform.rotate(glm::vec3(1.0f, 0.0f, 0.0f), 90 * dt);
+		if (_in.keyboard->keyPressed(Cappuccino::KeyEvent::RIGHT_ARROW))
+			_test->_transform.rotate(glm::vec3(1.0f, 0.0f, 0.0f), 90 * -dt);
+	}
+
+	if (_in.keyboard->keyPressed(Cappuccino::KeyEvent::UP_ARROW))
+		_test->_transform.rotate(glm::vec3(0.0f, 0.0f, 1.0f), 90 * dt);
+	if (_in.keyboard->keyPressed(Cappuccino::KeyEvent::DOWN_ARROW))
+		_test->_transform.rotate(glm::vec3(0.0f, 0.0f, 1.0f), 90 * -dt);
+
 
 	float speed = 1.5f;
 	moveForce *= speed;
@@ -75,6 +95,8 @@ void MainScene::childUpdate(float dt)
 
 	_pbr->use();
 	_pbr->loadViewMatrix(c);
+	static float elapsedTime = 0.0f;
+	elapsedTime += dt;
 }
 
 void MainScene::mouseFunction(double xpos, double ypos)
@@ -99,15 +121,16 @@ void MainScene::mouseFunction(double xpos, double ypos)
 }
 
 Empty::Empty(Cappuccino::Shader& SHADER, const std::vector<Cappuccino::Texture*>& textures, const std::vector<Cappuccino::Mesh*>& meshes)
-	:GameObject(SHADER,textures,meshes)
+	:GameObject(SHADER, textures, meshes)
 {
 }
 
 void Empty::childUpdate(float dt)
 {
+	//_transform.rotate(glm::vec3(0.0f, 1.0f, 0.0f), dt);
 }
 
 PointLight::PointLight(const glm::vec3& position, const glm::vec3& colour)
-	:_pos(position),_col(colour)
+	:_pos(position), _col(colour)
 {
 }

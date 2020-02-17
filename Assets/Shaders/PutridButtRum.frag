@@ -1,5 +1,6 @@
 #version 420 core
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 BrightColor;
 
 //https://learnopengl.com/PBR/Lighting
 //most of this code isn't mine
@@ -110,10 +111,16 @@ void main(){
     }
 
     //0.03 should be here, but to see stuff right now we leave it out
-    vec3 ambient = albedo * ambientOcc;
+    vec3 ambient = vec3(0.5f).rgb*albedo * ambientOcc;
     vec3 color   = ambient + Lo;
-    color += texture(material.emission,TexCoords).rgb;
-
+    color += 4.0f*texture(material.emission,TexCoords).rgb;
     color = vec3(1.0f) - exp(-color*1.0f);
     FragColor = vec4(color,1.0f);
+
+    float brightness = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+    if(brightness > 0.5f)//bloom threshold
+        BrightColor = vec4(FragColor.rgb, 1.0);
+    else
+        BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
+
 }
